@@ -1,0 +1,25 @@
+[project]
+name = "practice202603"
+version = "0.1.0"
+description = ""
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.135.1",
+    "httpx>=0.28.1",
+    "pydantic-settings>=2.13.1",
+]
+
+[dependency-groups]
+dev = [
+    "fastapi-cli>=0.0.24",
+    "ipython>=9.11.0",
+    "pytest>=9.0.2",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+src = ["backend"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

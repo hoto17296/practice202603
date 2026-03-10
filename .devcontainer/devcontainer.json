@@ -1,0 +1,32 @@
+{
+  "name": "practice202603",
+  "dockerComposeFile": ["compose.yml", "compose.env.yml"],
+  "service": "workspace",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [8080],
+  "postCreateCommand": ".devcontainer/postCreate.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "charliermarsh.ruff",
+        "ms-python.python"
+      ],
+      "settings": {
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnSave": true,
+          "editor.formatOnSaveMode": "file",
+          "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+          },
+          "editor.tabSize": 4
+        },
+        "python.languageServer": "Pylance",
+        "python.analysis.typeCheckingMode": "standard",
+        "python.terminal.activateEnvironment": false,
+        "remote.autoForwardPorts": false
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start backend dev server",
+      "type": "shell",
+      "command": "fastapi dev backend/app.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "Execute backend tests",
+      "type": "shell",
+      "command": "pytest backend/tests/*",
+      "group": {
+        "kind": "test"
+      },
+      "problemMatcher": []
+    },
+  ]
+}
