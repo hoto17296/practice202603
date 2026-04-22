@@ -8,6 +8,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "anthropic.claude-code",
         "charliermarsh.ruff",
         "ms-python.python"
       ],

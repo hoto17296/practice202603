@@ -4,3 +4,7 @@ services:
     command: nginx -g 'daemon off;'
     volumes:
       - ..:/workspace
+      - home:/root:delegated
+
+volumes:
+  home:
