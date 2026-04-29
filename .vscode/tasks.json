@@ -10,7 +10,7 @@
     {
       "label": "Start frontend dev server",
       "type": "shell",
-      "command": "bun run dev",
+      "command": "bun run dev --host",
       "options": {
         "cwd": "${workspaceFolder}/frontend"
       },

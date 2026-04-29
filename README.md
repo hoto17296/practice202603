@@ -9,3 +9,8 @@ services:
     environment:
       DEBUG: 1
 ```
+
+## Start dev servers
+Run the VSCode task "Start dev servers".
+
+Then open http://localhost:8080/
