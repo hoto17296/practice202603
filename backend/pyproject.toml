@@ -1,5 +1,5 @@
 [project]
-name = "practice202603"
+name = "backend"
 version = "0.1.0"
 description = ""
 requires-python = ">=3.14"
@@ -23,7 +23,6 @@ no-build = true
 [tool.ruff]
 line-length = 120
 target-version = "py314"
-src = ["backend"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

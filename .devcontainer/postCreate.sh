@@ -1,9 +1,7 @@
 #!/bin/bash -eu
 
-WORKSPACE_DIR=$(cd $(dirname $0)/..; pwd)
-
-[ ! -d "${WORKSPACE_DIR}/.venv" ] && uv venv ${WORKSPACE_DIR}/.venv
+[ ! -d "${UV_PROJECT}/.venv" ] && uv venv ${UV_PROJECT}/.venv
 
 uv sync
 
-cd ${WORKSPACE_DIR}/frontend && bun install
+bun install --cwd frontend
