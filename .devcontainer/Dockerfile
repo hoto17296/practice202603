@@ -19,4 +19,4 @@ COPY --from=ghcr.io/astral-sh/uv /uv /usr/local/bin/uv
 RUN uv python install 3.14
 ENV UV_PROJECT=/workspace/backend
 ENV PATH=${UV_PROJECT}/.venv/bin:${PATH}
-ENV PYTHONPATH=${UV_PROJECT}
+ENV PYTHONPATH=${UV_PROJECT}:/workspace/database

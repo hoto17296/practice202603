@@ -29,6 +29,31 @@
         "kind": "test"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "Generate database migration file",
+      "type": "shell",
+      "command": "alembic revision --autogenerate -m '${input:databaseMigrationName}' --rev-id $(date -u +'%Y%m%d_%H%M%S')",
+      "options": {
+        "cwd": "${workspaceFolder}/database"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Apply database migrations",
+      "type": "shell",
+      "command": "alembic upgrade head",
+      "options": {
+        "cwd": "${workspaceFolder}/database"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "databaseMigrationName",
+      "type": "promptString",
+      "description": "migration name"
     }
   ]
 }

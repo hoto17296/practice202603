@@ -7,8 +7,9 @@ dependencies = [
     "alembic>=1.18.4",
     "fastapi>=0.135.1",
     "httpx>=0.28.1",
+    "psycopg[binary,pool]>=3.3.3",
     "pydantic-settings>=2.13.1",
-    "sqlalchemy>=2.0.49",
+    "sqlalchemy[asyncio]==2.1.0b2",
 ]
 
 [dependency-groups]
@@ -25,6 +26,7 @@ no-build = true
 [tool.ruff]
 line-length = 120
 target-version = "py314"
+src = [".", "../database"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
