@@ -2,19 +2,36 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Start dev servers",
+      "dependsOn": ["Start backend dev server", "Start frontend dev server"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "Start frontend dev server",
+      "type": "shell",
+      "command": "bun run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
       "label": "Start backend dev server",
       "type": "shell",
       "command": "fastapi dev backend/app.py",
+      "isBackground": true,
       "problemMatcher": []
     },
     {
       "label": "Execute backend tests",
       "type": "shell",
-      "command": "pytest backend/tests/*",
+      "command": "pytest backend/tests/",
       "group": {
         "kind": "test"
       },
       "problemMatcher": []
-    },
+    }
   ]
 }

@@ -5,3 +5,5 @@ WORKSPACE_DIR=$(cd $(dirname $0)/..; pwd)
 [ ! -d "${WORKSPACE_DIR}/.venv" ] && uv venv ${WORKSPACE_DIR}/.venv
 
 uv sync
+
+cd ${WORKSPACE_DIR}/frontend && bun install

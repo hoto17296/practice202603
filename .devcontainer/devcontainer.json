@@ -10,24 +10,9 @@
       "extensions": [
         "anthropic.claude-code",
         "charliermarsh.ruff",
-        "ms-python.python"
-      ],
-      "settings": {
-        "[python]": {
-          "editor.defaultFormatter": "charliermarsh.ruff",
-          "editor.formatOnSave": true,
-          "editor.formatOnSaveMode": "file",
-          "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit",
-            "source.organizeImports": "explicit"
-          },
-          "editor.tabSize": 4
-        },
-        "python.languageServer": "Pylance",
-        "python.analysis.typeCheckingMode": "standard",
-        "python.terminal.activateEnvironment": false,
-        "remote.autoForwardPorts": false
-      }
+        "ms-python.python",
+        "oxc.oxc-vscode"
+      ]
     }
   }
 }
