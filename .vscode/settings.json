@@ -9,7 +9,5 @@
     "editor.tabSize": 4
   },
   "python.languageServer": "Pylance",
-  "python.analysis.typeCheckingMode": "standard",
-  "python.terminal.activateEnvironment": false,
-  "remote.autoForwardPorts": false
+  "python.analysis.typeCheckingMode": "standard"
 }
