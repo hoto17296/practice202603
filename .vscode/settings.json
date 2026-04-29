@@ -9,5 +9,25 @@
     "editor.tabSize": 4
   },
   "python.languageServer": "Pylance",
-  "python.analysis.typeCheckingMode": "standard"
+  "python.analysis.typeCheckingMode": "standard",
+  "pgsql.serverGroups": [
+    {
+      "name": "Servers",
+      "id": "servers"
+    }
+  ],
+  "pgsql.connections": [
+    {
+      "profileName": "superuser@database/app",
+      "id": "default",
+      "server": "database",
+      "user": "superuser",
+      "password": "",
+      "sslmode": "disable",
+      "database": "app",
+      "expiresOn": 0,
+      "sshPassword": "",
+      "groupId": "servers"
+    }
+  ]
 }

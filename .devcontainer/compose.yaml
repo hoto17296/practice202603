@@ -5,6 +5,18 @@ services:
     volumes:
       - ..:/workspace
       - home:/root:delegated
+    environment:
+      DATABASE_URL: postgresql://superuser:password@database/app
+
+  database:
+    image: postgres:18
+    volumes:
+      - database:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: superuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app
 
 volumes:
   home:
+  database:

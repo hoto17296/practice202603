@@ -1,7 +1,7 @@
 # Practice 2026.03
 
 ## Setup
-Create a `.devcontainer/compose.env.yml` file like the one below and open this repository in Dev Containers.
+Create a `.devcontainer/compose.env.yaml` file like the one below and open this repository in Dev Containers.
 
 ```yaml
 services:

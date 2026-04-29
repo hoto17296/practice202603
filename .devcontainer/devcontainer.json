@@ -10,12 +10,16 @@
       "extensions": [
         "anthropic.claude-code",
         "charliermarsh.ruff",
+        "ms-ossdata.vscode-pgsql",
         "ms-python.python",
         "oxc.oxc-vscode"
       ]
     },
     "settings": {
-      "remote.autoForwardPorts": false
+      "remote.autoForwardPorts": false,
+      "remote.extensionKind": {
+        "ms-ossdata.vscode-pgsql": ["workspace"]
+      }
     }
   }
 }
