@@ -6,6 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 DATABASE_URL = getenv("DATABASE_URL")
 assert DATABASE_URL
 
+# PostgreSQL に接続するドライバとして psycopg (v3) を使用する場合は接続文字列のスキームで明示する必要がある
+# ※ SQLAlchemy 2.1 以降は PostgreSQL 接続時のデフォルトドライバが psycopg (v3) になるため、この対応は不要になる
+# 参考: https://docs.sqlalchemy.org/en/21/changelog/migration_21.html#postgresql
+DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://")
+
 engine = create_async_engine(DATABASE_URL)
 
 
