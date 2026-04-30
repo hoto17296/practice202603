@@ -2,7 +2,8 @@ from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
-from tables import BaseTable
+from sqlmodel.sql.sqltypes import AutoString
+from tables import SQLModel
 
 from database import DATABASE_URL
 
@@ -19,7 +20,14 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = BaseTable.metadata
+target_metadata = SQLModel.metadata
+
+
+def render_item(type_, obj, autogen_context):
+    if type_ == "type" and isinstance(obj, AutoString):
+        return "sa.String()"
+    return False
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -44,6 +52,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        render_item=render_item,
     )
 
     with context.begin_transaction():
@@ -60,7 +69,11 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            render_item=render_item,
+        )
 
         with context.begin_transaction():
             context.run_migrations()

@@ -4,44 +4,33 @@ import uuid
 from datetime import datetime
 from typing import NotRequired, TypedDict
 
-from sqlalchemy import DateTime, ForeignKey, Text, func
-from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import func
+from sqlmodel import Field, SQLModel
+from utils import Fields
 
 
 # ------------------------------------------------------------
 # BaseTable
 # ------------------------------------------------------------
-class BaseTable(DeclarativeBase):
-    __pydantic_model__: str | None = None
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-        sort_order=-1,
-    )
+class BaseTable(SQLModel):
+    id: uuid.UUID = Fields.uuid(primary_key=True)
 
 
 # ------------------------------------------------------------
 # Mixins
 # ------------------------------------------------------------
-class TimestampMixin:
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(),
+class TimestampMixin(SQLModel):
+    created_at: datetime = Field(
         nullable=False,
-        server_default=func.now(),
         index=True,
-        sort_order=-1,
+        # Mixin で sa_column=Column(...) と書くと同一オブジェクトが共有されてしまうため sa_column_kwargs を使う
+        sa_column_kwargs={"server_default": func.now()},
     )
-
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(),
+    updated_at: datetime = Field(
         nullable=False,
-        server_default=func.now(),
-        onupdate=func.now(),
         index=True,
-        sort_order=-1,
+        # Mixin で sa_column=Column(...) と書くと同一オブジェクトが共有されてしまうため sa_column_kwargs を使う
+        sa_column_kwargs={"server_default": func.now(), "onupdate": func.now()},
     )
 
 
@@ -55,113 +44,43 @@ class UserMeta(TypedDict):
 # ------------------------------------------------------------
 # Tables
 # ------------------------------------------------------------
-class UserTable(BaseTable, TimestampMixin):
-    __tablename__ = "users"
-    __pydantic_model__ = "User"
+class UserTable(TimestampMixin, BaseTable, table=True):
+    __tablename__ = "user"  # type: ignore
 
-    email: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-        unique=True,
-        index=True,
-    )
+    email: str = Fields.text(unique=True, index=True)
+    name: str = Fields.text()
+    password_hash: str = Fields.text()
+    meta: UserMeta = Fields.jsonb()
 
-    name: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )
+    # Relationships
+    articles: list[ArticleTable] = Fields.relationship_has_many(back_populates="author")
+    comments: list[CommentTable] = Fields.relationship_has_many(back_populates="author")
 
-    password_hash: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )
 
-    meta: Mapped[UserMeta] = mapped_column(
-        JSONB,
-        nullable=False,
-        server_default="{}",
-    )
+class ArticleTable(TimestampMixin, BaseTable, table=True):
+    __tablename__ = "article"  # type: ignore
 
-    # relationships
-    articles: Mapped[list[ArticleTable]] = relationship(
-        back_populates="author",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
+    author_id: uuid.UUID = Fields.foreign_key(column="user.id", index=True)
+    title: str = Fields.text()
+    body: str = Fields.text()
+    published_at: datetime | None = Field(default=None, index=True)
 
-    comments: Mapped[list[CommentTable]] = relationship(
-        back_populates="author",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
+    # Relationships
+    author: UserTable | None = Fields.relationship_has_one(back_populates="articles")
+    comments: list[CommentTable] = Fields.relationship_has_many(
+        back_populates="article"
     )
 
 
-class ArticleTable(BaseTable, TimestampMixin):
-    __tablename__ = "articles"
-    __pydantic_model__ = "Article"
+class CommentTable(TimestampMixin, BaseTable, table=True):
+    __tablename__ = "comment"  # type: ignore
 
-    author_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
+    article_id: uuid.UUID = Fields.foreign_key(column="article.id", index=True)
+    author_id: uuid.UUID = Fields.foreign_key(column="user.id", index=True)
+    body: str = Fields.text()
+
+    # Relationships
+    article: ArticleTable | None = Fields.relationship_has_one(
+        back_populates="comments"
     )
-
-    title: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )
-
-    body: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )
-
-    published_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
-        index=True,
-    )
-
-    # relationships
-    author: Mapped[UserTable] = relationship(
-        back_populates="articles",
-    )
-
-    comments: Mapped[list[CommentTable]] = relationship(
-        back_populates="article",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
-
-
-class CommentTable(BaseTable, TimestampMixin):
-    __tablename__ = "comments"
-    __pydantic_model__ = "Comment"
-
-    article_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey("articles.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
-
-    author_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
-
-    body: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )
-
-    # relationships
-    article: Mapped[ArticleTable] = relationship(
-        back_populates="comments",
-    )
-
-    author: Mapped[UserTable] = relationship(
-        back_populates="comments",
-    )
+    author: UserTable | None = Fields.relationship_has_one(back_populates="comments")
