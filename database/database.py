@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 from os import getenv
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 DATABASE_URL = getenv("DATABASE_URL")
 assert DATABASE_URL

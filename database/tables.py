@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import uuid
 from datetime import datetime
 from typing import NotRequired, TypedDict
@@ -53,8 +51,12 @@ class UserTable(TimestampMixin, BaseTable, table=True):
     meta: UserMeta = Fields.jsonb()
 
     # Relationships
-    articles: list[ArticleTable] = Fields.relationship_has_many(back_populates="author")
-    comments: list[CommentTable] = Fields.relationship_has_many(back_populates="author")
+    articles: list["ArticleTable"] = Fields.relationship_has_many(
+        back_populates="author"
+    )
+    comments: list["CommentTable"] = Fields.relationship_has_many(
+        back_populates="author"
+    )
 
 
 class ArticleTable(TimestampMixin, BaseTable, table=True):
@@ -67,7 +69,7 @@ class ArticleTable(TimestampMixin, BaseTable, table=True):
 
     # Relationships
     author: UserTable | None = Fields.relationship_has_one(back_populates="articles")
-    comments: list[CommentTable] = Fields.relationship_has_many(
+    comments: list["CommentTable"] = Fields.relationship_has_many(
         back_populates="article"
     )
 
