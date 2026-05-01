@@ -5,3 +5,5 @@
 uv sync
 
 bun install --cwd frontend
+
+bash generate-api-spec.sh
