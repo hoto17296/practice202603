@@ -7,7 +7,8 @@ services:
       - home:/root:delegated
     environment:
       DATABASE_URL: postgresql://superuser:password@database/app
-      PASSWORD_PEPPER: deadbeef
+      JWT_PRIVATE_KEY: a4b1c6a90d47f6630849db54b97bad77
+      PASSWORD_PEPPER: 54418efed47abf0e7cfbc606d097a4dc
 
   database:
     image: postgres:18
