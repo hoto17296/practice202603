@@ -121,10 +121,17 @@ async with get_database_session() as db:
 
 カスタムエラー型は `backend/models.py` の `HTTPExceptionBody[T]` を使う。エンドポイントの `responses=` に型を宣言することで OpenAPI に反映される（→ フロントエンドの型推論に効く）。
 
+返しうる `detail` 値を `Literal` で列挙した型エイリアスを定義し、型引数として渡す。
+
 ```python
+from typing import Literal
+from models import HTTPExceptionBody
+
+type MyErrorType = Literal["FOO_ERROR", "BAR_ERROR"]
+
 @router.post("/", responses={400: {"model": HTTPExceptionBody[MyErrorType]}})
 async def create_something(...):
-    raise HTTPException(status_code=400, detail="MY_ERROR_TYPE")
+    raise HTTPException(status_code=400, detail="FOO_ERROR")
 ```
 
 ### 認証が必要なエンドポイント
@@ -178,6 +185,24 @@ class ArticleTable(TimestampMixin, BaseTable, table=True):
 ---
 
 ## フロントエンド設計パターン
+
+### テーマカラー
+
+色は `frontend/src/style.css` に定義された CSS 変数を使う。ハードコードした色値（`#888` 等）は使わない。
+
+| 変数 | 用途 |
+|------|------|
+| `--color-primary` | メインカラー |
+| `--color-primary-hover` | メインカラー（ホバー時） |
+| `--color-secondary` | アクセントカラー |
+| `--color-focus` | フォーカスリング等 |
+| `--color-danger` | エラー・警告 |
+| `--color-note` | 補足テキスト・日時など目立たせたくない文字 |
+
+```tsx
+// 例
+<span style={{ color: "var(--color-note)" }}>補足テキスト</span>
+```
 
 ### 新しいページを追加する
 

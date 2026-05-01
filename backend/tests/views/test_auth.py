@@ -96,7 +96,7 @@ class TestGetSession:
     @pytest.mark.anyio
     async def test_セッションが有効なとき(self):
         user = _make_user()
-        mock_session: AuthSession = {"user": user}
+        mock_session: AuthSession = {"user": {"id": str(user.id), "email": user.email, "name": user.name}}
         app.dependency_overrides[get_session] = lambda: mock_session
         try:
             async with get_client() as client:

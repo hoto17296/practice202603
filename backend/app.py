@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+import views.articles as views_articles
 import views.auth as views_auth
 from settings import settings
 
@@ -15,3 +16,4 @@ async def healthcheck():
 
 
 app.include_router(views_auth.router, prefix="/api/auth")
+app.include_router(views_articles.router, prefix="/api/articles")
