@@ -1,9 +1,7 @@
 from fastapi import FastAPI
-from sqlmodel import select
 
-from database import get_database_session
+import views.auth as views_auth
 from settings import settings
-from tables import UserTable
 
 app = FastAPI(
     debug=settings.debug,
@@ -16,11 +14,4 @@ async def healthcheck():
     return "ok"
 
 
-@app.get("/api/users")
-async def get_users():
-    async with get_database_session() as db:
-        stmt = select(UserTable)
-        user = (await db.exec(stmt)).first()
-    if user:
-        return "ok"
-    return "ng"
+app.include_router(views_auth.router, prefix="/api/auth")
