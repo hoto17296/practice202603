@@ -10,9 +10,10 @@ from models import HTTPExceptionBody
 router = APIRouter()
 
 
-class Credentials(BaseModel):
+class PostSignupRequestBody(BaseModel):
     email: str
     password: str
+    name: str
 
 
 @router.post(
@@ -22,9 +23,9 @@ class Credentials(BaseModel):
         409: {"model": HTTPExceptionBody[UserRegistrationErrorType]},
     },
 )
-async def post_signup(credentials: Credentials, response: Response):
+async def post_signup(body: PostSignupRequestBody, response: Response):
     try:
-        user = await register_user(credentials.email, credentials.password)
+        user = await register_user(body.email, body.password, body.name)
     except UserRegistrationError as exc:
         if exc.type == "ALREADY_EXISTS":
             raise HTTPException(status_code=409, detail=exc.type) from exc
@@ -33,9 +34,14 @@ async def post_signup(credentials: Credentials, response: Response):
     set_session(response, user)
 
 
+class PostSigninRequestBody(BaseModel):
+    email: str
+    password: str
+
+
 @router.post("/signin", responses={400: {"model": HTTPExceptionBody}})
-async def post_signin(credentials: Credentials, response: Response):
-    user = await verify_user(credentials.email, credentials.password)
+async def post_signin(body: PostSigninRequestBody, response: Response):
+    user = await verify_user(body.email, body.password)
     if user is None:
         await sleep(1)
         raise HTTPException(status_code=400)

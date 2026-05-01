@@ -5,10 +5,16 @@ from typing import Literal
 from sqlmodel import select
 
 from database import get_database_session
+from lib.utils import sanitize_string
 from settings import settings
 from tables import UserTable
 
-type UserRegistrationErrorType = Literal["INVALID_EMAIL_ADDRESS", "INVALID_PASSWORD", "ALREADY_EXISTS"]
+type UserRegistrationErrorType = Literal[
+    "INVALID_EMAIL_ADDRESS",
+    "INVALID_PASSWORD",
+    "NAME_IS_REQUIRED",
+    "ALREADY_EXISTS",
+]
 
 
 class UserRegistrationError(Exception):
@@ -34,12 +40,15 @@ VALIDATION_PATTERNS = {
 }
 
 
-async def register_user(email: str, password: str) -> UserTable:
+async def register_user(email: str, password: str, name: str) -> UserTable:
     # validation
     if not re.match(VALIDATION_PATTERNS["email"], email):
         raise UserRegistrationError("INVALID_EMAIL_ADDRESS")
     if not re.match(VALIDATION_PATTERNS["password"], password):
         raise UserRegistrationError("INVALID_PASSWORD")
+    name = sanitize_string(name, remove_newlines=True).strip()
+    if len(name) == 0:
+        raise UserRegistrationError("NAME_IS_REQUIRED")
 
     async with get_database_session() as db:
         # check duplicates
@@ -48,10 +57,7 @@ async def register_user(email: str, password: str) -> UserTable:
             raise UserRegistrationError("ALREADY_EXISTS")
 
         # create user
-        user = UserTable(
-            email=email,
-            password_hash=_hash_password(password),
-        )
+        user = UserTable(email=email, password_hash=_hash_password(password), name=name)
         db.add(user)
         await db.commit()
         await db.refresh(user)

@@ -28,7 +28,7 @@ class TestPostSignup:
         with patch("views.auth.register_user", AsyncMock(return_value=user)):
             async with get_client() as client:
                 response = await client.post(
-                    "/api/auth/signup", json={"email": "user@example.com", "password": "ValidPass1!"}
+                    "/api/auth/signup", json={"email": "user@example.com", "password": "ValidPass1!", "name": "Test User"}
                 )
         assert response.status_code == 200, "登録できること"
         assert "session" in response.cookies, "セッションクッキーがセットされること"
@@ -37,7 +37,7 @@ class TestPostSignup:
     async def test_メールアドレスが不正なとき(self):
         with patch("views.auth.register_user", AsyncMock(side_effect=UserRegistrationError("INVALID_EMAIL_ADDRESS"))):
             async with get_client() as client:
-                response = await client.post("/api/auth/signup", json={"email": "invalid", "password": "ValidPass1!"})
+                response = await client.post("/api/auth/signup", json={"email": "invalid", "password": "ValidPass1!", "name": "Test User"})
         assert response.status_code == 400, "Bad Request エラーになること"
         assert response.json()["detail"] == "INVALID_EMAIL_ADDRESS"
 
@@ -46,7 +46,7 @@ class TestPostSignup:
         with patch("views.auth.register_user", AsyncMock(side_effect=UserRegistrationError("INVALID_PASSWORD"))):
             async with get_client() as client:
                 response = await client.post(
-                    "/api/auth/signup", json={"email": "user@example.com", "password": "short"}
+                    "/api/auth/signup", json={"email": "user@example.com", "password": "short", "name": "Test User"}
                 )
         assert response.status_code == 400, "Bad Request エラーになること"
         assert response.json()["detail"] == "INVALID_PASSWORD"
@@ -56,7 +56,7 @@ class TestPostSignup:
         with patch("views.auth.register_user", AsyncMock(side_effect=UserRegistrationError("ALREADY_EXISTS"))):
             async with get_client() as client:
                 response = await client.post(
-                    "/api/auth/signup", json={"email": "user@example.com", "password": "ValidPass1!"}
+                    "/api/auth/signup", json={"email": "user@example.com", "password": "ValidPass1!", "name": "Test User"}
                 )
         assert response.status_code == 409, "Conflict エラーになること"
         assert response.json()["detail"] == "ALREADY_EXISTS"

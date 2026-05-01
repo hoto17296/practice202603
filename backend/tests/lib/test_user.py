@@ -29,7 +29,7 @@ class TestRegisterUser:
     async def test_メールアドレスとパスワードが正常なとき(self):
         mock_db = _make_mock_db(existing_user=None)
         with _patch_session(mock_db):
-            user = await register_user("new@example.com", "ValidPass1!")
+            user = await register_user("new@example.com", "ValidPass1!", "Test User")
         assert user.email == "new@example.com", "ユーザ登録できること"
         mock_db.add.assert_called_once()
         mock_db.commit.assert_awaited_once()
@@ -38,13 +38,13 @@ class TestRegisterUser:
     @pytest.mark.anyio
     async def test_メールアドレスが不正なとき(self):
         with pytest.raises(UserRegistrationError) as exc:
-            await register_user("not-an-email", "ValidPass1!")
+            await register_user("not-an-email", "ValidPass1!", "Test User")
         assert exc.value.type == "INVALID_EMAIL_ADDRESS", "エラーになること"
 
     @pytest.mark.anyio
     async def test_パスワードが不正なとき(self):
         with pytest.raises(UserRegistrationError) as exc:
-            await register_user("user@example.com", "short")
+            await register_user("user@example.com", "short", "Test User")
         assert exc.value.type == "INVALID_PASSWORD", "エラーになること"
 
     @pytest.mark.anyio
@@ -53,7 +53,7 @@ class TestRegisterUser:
         mock_db = _make_mock_db(existing_user=existing)
         with _patch_session(mock_db):
             with pytest.raises(UserRegistrationError) as exc:
-                await register_user("user@example.com", "ValidPass1!")
+                await register_user("user@example.com", "ValidPass1!", "Test User")
         assert exc.value.type == "ALREADY_EXISTS", "エラーになること"
 
 
