@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, Text
+from sqlalchemy import Text
 from sqlalchemy.dialects import postgresql as pg
 from sqlmodel import Field, Relationship
 
@@ -25,12 +25,10 @@ class Fields:
         PostgreSQL では TEXT 型を使用するほうが一般的であるため、TEXT 型で作成できるようにする
         """
         return Field(
-            sa_column=Column(
-                Text,
-                unique=unique,
-                nullable=nullable,
-                index=index,
-            )
+            sa_type=Text,
+            unique=unique,
+            nullable=nullable,
+            index=index,
         )
 
     @staticmethod
@@ -38,11 +36,9 @@ class Fields:
         """JSONB 型フィールドを作成する"""
         return Field(
             default_factory=dict,
-            sa_column=Column(
-                pg.JSONB,
-                nullable=nullable,
-                server_default=None if nullable else "{}",
-            ),
+            sa_type=pg.JSONB,
+            nullable=nullable,
+            sa_column_kwargs={"server_default": None if nullable else "{}"},
         )
 
     @staticmethod

@@ -18,13 +18,15 @@ class BaseTable(SQLModel):
 # Mixins
 # ------------------------------------------------------------
 class TimestampMixin(SQLModel):
-    created_at: datetime = Field(
+    created_at: datetime | None = Field(
+        default=None,
         nullable=False,
         index=True,
         # Mixin で sa_column=Column(...) と書くと同一オブジェクトが共有されてしまうため sa_column_kwargs を使う
         sa_column_kwargs={"server_default": func.now()},
     )
-    updated_at: datetime = Field(
+    updated_at: datetime | None = Field(
+        default=None,
         nullable=False,
         index=True,
         # Mixin で sa_column=Column(...) と書くと同一オブジェクトが共有されてしまうため sa_column_kwargs を使う
