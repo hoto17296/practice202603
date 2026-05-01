@@ -16,8 +16,14 @@ class JwtPayload(TypedDict):
     id: str
 
 
+class AuthSessionUser(TypedDict):
+    id: str
+    email: str
+    name: str
+
+
 class AuthSession(TypedDict):
-    user: UserTable
+    user: AuthSessionUser
 
 
 async def get_session(request: Request) -> AuthSession:
@@ -33,7 +39,13 @@ async def get_session(request: Request) -> AuthSession:
         user = (await db.exec(stmt)).first()
     if user is None:
         raise HTTPException(status_code=401)
-    return {"user": user}
+    return {
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "name": user.name,
+        }
+    }
 
 
 def set_session(response: Response, user: UserTable):
