@@ -9,7 +9,7 @@ interface ArticleDetailPageProps {}
 const ArticleDetailPage: FC<ArticleDetailPageProps> = () => {
   useSession();
   const { id } = useParams<{ id: string }>();
-  const [article, setArticle] = useState<ApiSchemaTypes["ArticleTable"] | null>(null);
+  const [article, setArticle] = useState<ApiSchemaTypes["ArticleDetail"] | null>(null);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
@@ -48,7 +48,8 @@ const ArticleDetailPage: FC<ArticleDetailPageProps> = () => {
       </p>
       <h2>{article.title}</h2>
       <p style={{ color: "var(--color-note)", fontSize: "0.85em" }}>
-        {article.created_at ? new Date(article.created_at).toLocaleString("ja-JP") : ""}
+        {article.author_name} ·{" "}
+        {article.published_at ? new Date(article.published_at).toLocaleString("ja-JP") : ""}
       </p>
       <div style={{ whiteSpace: "pre-wrap", marginTop: "1em" }}>{article.body}</div>
     </>

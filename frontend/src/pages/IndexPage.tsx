@@ -34,7 +34,7 @@ const IndexPage: FC<IndexPageProps> = () => {
             <li key={article.id}>
               <Link to={`/article/${article.id}`}>{article.title}</Link>
               <span style={{ marginLeft: "1em", color: "var(--color-note)", fontSize: "0.85em" }}>
-                {new Date(article.published_at).toLocaleString("ja-JP")}
+                {article.author_name} · {new Date(article.published_at).toLocaleString("ja-JP")}
               </span>
             </li>
           ))}

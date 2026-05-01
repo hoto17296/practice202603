@@ -39,16 +39,16 @@ async def _mock_db(**kwargs):
     """
     キーワード引数でモック DB の振る舞いを設定する。
       articles: list_articles の db.exec().all() の戻り値
-      article:  get_article の db.get() の戻り値（None = 未存在）
+      article:  get_article の db.exec().first() の戻り値（None = 未存在）
     """
     db = AsyncMock()
     db.add = MagicMock()  # add() は同期呼び出し
+    exec_result = MagicMock()
     if "articles" in kwargs:
-        exec_result = MagicMock()
         exec_result.all.return_value = kwargs["articles"]
-        db.exec.return_value = exec_result
     if "article" in kwargs:
-        db.get.return_value = kwargs["article"]
+        exec_result.first.return_value = kwargs["article"]
+    db.exec.return_value = exec_result
     yield db
 
 

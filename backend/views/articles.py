@@ -4,6 +4,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy.orm import selectinload
 from sqlmodel import col, select
 
 from database import get_database_session
@@ -19,8 +20,20 @@ type PostArticleErrorType = Literal["TITLE_IS_REQUIRED", "BODY_IS_REQUIRED"]
 class ArticleSummary(BaseModel):
     id: uuid.UUID
     author_id: uuid.UUID
+    author_name: str
     title: str
     published_at: datetime
+
+
+class ArticleDetail(BaseModel):
+    id: uuid.UUID
+    author_id: uuid.UUID
+    author_name: str
+    title: str
+    body: str
+    published_at: datetime | None
+    created_at: datetime | None
+    updated_at: datetime | None
 
 
 class PostArticleRequestBody(BaseModel):
@@ -33,6 +46,7 @@ async def list_articles(_: AuthSession = Depends(get_session)) -> list[ArticleSu
     async with get_database_session() as db:
         stmt = (
             select(ArticleTable)
+            .options(selectinload(ArticleTable.author))  # type: ignore[arg-type]
             .where(col(ArticleTable.published_at).isnot(None))
             .order_by(col(ArticleTable.published_at).desc())
         )
@@ -41,6 +55,7 @@ async def list_articles(_: AuthSession = Depends(get_session)) -> list[ArticleSu
         ArticleSummary(
             id=a.id,
             author_id=a.author_id,
+            author_name=a.author.name if a.author else "",
             title=a.title,
             published_at=a.published_at,
         )
@@ -53,12 +68,26 @@ async def list_articles(_: AuthSession = Depends(get_session)) -> list[ArticleSu
 async def get_article(
     article_id: uuid.UUID,
     _: AuthSession = Depends(get_session),
-) -> ArticleTable:
+) -> ArticleDetail:
     async with get_database_session() as db:
-        article = await db.get(ArticleTable, article_id)
+        stmt = (
+            select(ArticleTable)
+            .options(selectinload(ArticleTable.author))  # type: ignore[arg-type]
+            .where(ArticleTable.id == article_id)
+        )
+        article = (await db.exec(stmt)).first()
     if article is None:
         raise HTTPException(status_code=404)
-    return article
+    return ArticleDetail(
+        id=article.id,
+        author_id=article.author_id,
+        author_name=article.author.name if article.author else "",
+        title=article.title,
+        body=article.body,
+        published_at=article.published_at,
+        created_at=article.created_at,
+        updated_at=article.updated_at,
+    )
 
 
 @router.post(
