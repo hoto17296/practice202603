@@ -1,5 +1,5 @@
 import { useEffect, useState, type FC } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 
 import api, { type ApiSchemaTypes } from "../lib/api";
 import { useSession } from "../lib/auth";
@@ -7,10 +7,20 @@ import { useSession } from "../lib/auth";
 interface ArticleDetailPageProps {}
 
 const ArticleDetailPage: FC<ArticleDetailPageProps> = () => {
-  useSession();
+  const session = useSession();
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [article, setArticle] = useState<ApiSchemaTypes["ArticleDetail"] | null>(null);
   const [notFound, setNotFound] = useState(false);
+
+  async function handleDelete() {
+    if (!id || !window.confirm("この記事を削除しますか？")) return;
+    const { response, error } = await api.DELETE("/api/articles/{article_id}", {
+      params: { path: { article_id: id } },
+    });
+    if (!response.ok) throw error;
+    navigate("/");
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -45,6 +55,15 @@ const ArticleDetailPage: FC<ArticleDetailPageProps> = () => {
     <>
       <p>
         <Link to="/">← 一覧に戻る</Link>
+        {article.author_id === session.user.id && (
+          <>
+            {" "}
+            · <Link to={`/article/${id}/edit`}>編集</Link> ·{" "}
+            <a href="#" onClick={handleDelete}>
+              削除
+            </a>
+          </>
+        )}
       </p>
       <h2>{article.title}</h2>
       <p style={{ color: "var(--color-note)", fontSize: "0.85em" }}>

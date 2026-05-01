@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 
 import DefaultLayout from "./components/layouts/DefaultLayout";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
+import ArticleEditPage from "./pages/ArticleEditPage";
 import ArticleNewPage from "./pages/ArticleNewPage";
 import IndexPage from "./pages/IndexPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -18,6 +19,7 @@ const App: FC<AppProps> = () => {
         <Route path="/" element={<IndexPage />} />
         <Route path="article/new" element={<ArticleNewPage />} />
         <Route path="article/:id" element={<ArticleDetailPage />} />
+        <Route path="article/:id/edit" element={<ArticleEditPage />} />
         <Route path="signin" element={<SigninPage />} />
         <Route path="signup" element={<SignupPage />} />
         <Route path="*" element={<NotFoundPage />} />

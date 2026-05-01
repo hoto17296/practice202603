@@ -39,7 +39,8 @@ async def _mock_db(**kwargs):
     """
     キーワード引数でモック DB の振る舞いを設定する。
       articles: list_articles の db.exec().all() の戻り値
-      article:  get_article の db.exec().first() の戻り値（None = 未存在）
+      article:  get_article / delete_article の db.exec().first() および
+                db.get() の戻り値（None = 未存在）
     """
     db = AsyncMock()
     db.add = MagicMock()  # add() は同期呼び出し
@@ -48,6 +49,7 @@ async def _mock_db(**kwargs):
         exec_result.all.return_value = kwargs["articles"]
     if "article" in kwargs:
         exec_result.first.return_value = kwargs["article"]
+        db.get.return_value = kwargs["article"]
     db.exec.return_value = exec_result
     yield db
 
@@ -199,3 +201,135 @@ class TestPostArticle:
             app.dependency_overrides.pop(get_session, None)
         assert response.status_code == 400
         assert response.json()["detail"] == "BODY_IS_REQUIRED"
+
+
+class TestPatchArticle:
+    @pytest.mark.anyio
+    async def test_未認証のとき(self):
+        app.dependency_overrides[get_session] = _raise_401
+        try:
+            async with get_client() as client:
+                response = await client.patch(f"/api/articles/{uuid.uuid4()}", json={"title": "Title", "body": "Body"})
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 401, "Unauthorized エラーになること"
+
+    @pytest.mark.anyio
+    async def test_正常なとき(self):
+        article = _make_article()
+
+        app.dependency_overrides[get_session] = lambda: MOCK_SESSION
+        try:
+            with patch("views.articles.get_database_session", lambda: _mock_db(article=article)):
+                async with get_client() as client:
+                    response = await client.patch(
+                        f"/api/articles/{article.id}",
+                        json={"title": "Updated Title", "body": "Updated Body"},
+                    )
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["title"] == "Updated Title"
+        assert data["body"] == "Updated Body"
+
+    @pytest.mark.anyio
+    async def test_記事が存在しないとき(self):
+        app.dependency_overrides[get_session] = lambda: MOCK_SESSION
+        try:
+            with patch("views.articles.get_database_session", lambda: _mock_db(article=None)):
+                async with get_client() as client:
+                    response = await client.patch(
+                        f"/api/articles/{uuid.uuid4()}",
+                        json={"title": "Title", "body": "Body"},
+                    )
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 404, "Not Found エラーになること"
+
+    @pytest.mark.anyio
+    async def test_投稿者以外が編集しようとしたとき(self):
+        article = _make_article(author_id=uuid.uuid4())
+
+        app.dependency_overrides[get_session] = lambda: MOCK_SESSION
+        try:
+            with patch("views.articles.get_database_session", lambda: _mock_db(article=article)):
+                async with get_client() as client:
+                    response = await client.patch(
+                        f"/api/articles/{article.id}",
+                        json={"title": "Title", "body": "Body"},
+                    )
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 403, "Forbidden エラーになること"
+
+    @pytest.mark.anyio
+    async def test_タイトルが空のとき(self):
+        app.dependency_overrides[get_session] = lambda: MOCK_SESSION
+        try:
+            async with get_client() as client:
+                response = await client.patch(f"/api/articles/{uuid.uuid4()}", json={"title": "  ", "body": "Body"})
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 400
+        assert response.json()["detail"] == "TITLE_IS_REQUIRED"
+
+    @pytest.mark.anyio
+    async def test_本文が空のとき(self):
+        app.dependency_overrides[get_session] = lambda: MOCK_SESSION
+        try:
+            async with get_client() as client:
+                response = await client.patch(f"/api/articles/{uuid.uuid4()}", json={"title": "Title", "body": "  "})
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 400
+        assert response.json()["detail"] == "BODY_IS_REQUIRED"
+
+
+class TestDeleteArticle:
+    @pytest.mark.anyio
+    async def test_未認証のとき(self):
+        app.dependency_overrides[get_session] = _raise_401
+        try:
+            async with get_client() as client:
+                response = await client.delete(f"/api/articles/{uuid.uuid4()}")
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 401, "Unauthorized エラーになること"
+
+    @pytest.mark.anyio
+    async def test_正常なとき(self):
+        article = _make_article()
+
+        app.dependency_overrides[get_session] = lambda: MOCK_SESSION
+        try:
+            with patch("views.articles.get_database_session", lambda: _mock_db(article=article)):
+                async with get_client() as client:
+                    response = await client.delete(f"/api/articles/{article.id}")
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 204, "No Content が返ること"
+
+    @pytest.mark.anyio
+    async def test_記事が存在しないとき(self):
+        app.dependency_overrides[get_session] = lambda: MOCK_SESSION
+        try:
+            with patch("views.articles.get_database_session", lambda: _mock_db(article=None)):
+                async with get_client() as client:
+                    response = await client.delete(f"/api/articles/{uuid.uuid4()}")
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 404, "Not Found エラーになること"
+
+    @pytest.mark.anyio
+    async def test_投稿者以外が削除しようとしたとき(self):
+        article = _make_article(author_id=uuid.uuid4())
+
+        app.dependency_overrides[get_session] = lambda: MOCK_SESSION
+        try:
+            with patch("views.articles.get_database_session", lambda: _mock_db(article=article)):
+                async with get_client() as client:
+                    response = await client.delete(f"/api/articles/{article.id}")
+        finally:
+            app.dependency_overrides.pop(get_session, None)
+        assert response.status_code == 403, "Forbidden エラーになること"

@@ -90,6 +90,72 @@ async def get_article(
     )
 
 
+class PatchArticleRequestBody(BaseModel):
+    title: str
+    body: str
+
+
+@router.patch(
+    "/{article_id}",
+    responses={
+        400: {"model": HTTPExceptionBody[PostArticleErrorType]},
+    },
+)
+async def patch_article(
+    article_id: uuid.UUID,
+    req: PatchArticleRequestBody,
+    session: AuthSession = Depends(get_session),
+) -> ArticleDetail:
+    title = req.title.strip()
+    body = req.body.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="TITLE_IS_REQUIRED")
+    if not body:
+        raise HTTPException(status_code=400, detail="BODY_IS_REQUIRED")
+
+    async with get_database_session() as db:
+        stmt = (
+            select(ArticleTable)
+            .options(selectinload(ArticleTable.author))  # type: ignore[arg-type]
+            .where(ArticleTable.id == article_id)
+        )
+        article = (await db.exec(stmt)).first()
+        if article is None:
+            raise HTTPException(status_code=404)
+        if str(article.author_id) != session["user"]["id"]:
+            raise HTTPException(status_code=403)
+        article.title = title
+        article.body = body
+        await db.commit()
+        await db.refresh(article)
+
+    return ArticleDetail(
+        id=article.id,
+        author_id=article.author_id,
+        author_name=article.author.name if article.author else "",
+        title=article.title,
+        body=article.body,
+        published_at=article.published_at,
+        created_at=article.created_at,
+        updated_at=article.updated_at,
+    )
+
+
+@router.delete("/{article_id}", status_code=204)
+async def delete_article(
+    article_id: uuid.UUID,
+    session: AuthSession = Depends(get_session),
+) -> None:
+    async with get_database_session() as db:
+        article = await db.get(ArticleTable, article_id)
+        if article is None:
+            raise HTTPException(status_code=404)
+        if str(article.author_id) != session["user"]["id"]:
+            raise HTTPException(status_code=403)
+        await db.delete(article)
+        await db.commit()
+
+
 @router.post(
     "/",
     responses={400: {"model": HTTPExceptionBody[PostArticleErrorType]}},
