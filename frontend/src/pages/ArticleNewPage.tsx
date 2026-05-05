@@ -34,7 +34,7 @@ const ArticleNewPage: FC<ArticleNewPageProps> = () => {
 
   return (
     <>
-      <h2>New Article</h2>
+      <h2>記事を新規作成</h2>
       <Form layout="vertical" onFinish={onFinish} disabled={loading}>
         <Form.Item
           label="タイトル"

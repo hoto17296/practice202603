@@ -1,8 +1,8 @@
-import { atom } from "jotai";
+import { atomWithRefresh } from "jotai/utils";
 
-import api, { type ApiSchemaTypes } from "./lib/api";
+import api from "./lib/api";
 
-export const authSessionAtom = atom<Promise<ApiSchemaTypes["AuthSession"] | null>>(async () => {
+export const authSessionAtom = atomWithRefresh(async () => {
   const { response, data, error } = await api.GET("/api/auth/session");
   if (response.status === 401) return null;
   if (error) throw error;

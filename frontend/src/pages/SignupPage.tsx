@@ -1,8 +1,7 @@
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { Alert, Button, Form, Input } from "antd";
-import { useAtomValue } from "jotai";
+import { useSetAtom } from "jotai";
 import { useState, type FC } from "react";
-import { Link, Navigate, useNavigate } from "react-router";
 
 import { authSessionAtom } from "../atoms";
 import api from "../lib/api";
@@ -10,12 +9,9 @@ import api from "../lib/api";
 interface SignupPageProps {}
 
 const SignupPage: FC<SignupPageProps> = () => {
-  const session = useAtomValue(authSessionAtom);
-  const navigate = useNavigate();
+  const refreshSession = useSetAtom(authSessionAtom);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  if (session) return <Navigate to="/" replace />;
 
   async function onFinish({ email, password, name }: any) {
     setErrorMessage(null);
@@ -25,10 +21,9 @@ const SignupPage: FC<SignupPageProps> = () => {
     });
     setLoading(false);
     if (response.ok) {
-      navigate("/");
+      refreshSession();
       return;
     }
-    // TODO: i18n
     if (response.status === 409) {
       setErrorMessage("そのメールアドレスは既に登録されています。");
       return;
@@ -46,7 +41,7 @@ const SignupPage: FC<SignupPageProps> = () => {
 
   return (
     <>
-      <h2>Sign up</h2>
+      <h2>アカウント登録</h2>
       <Form layout="vertical" autoComplete="off" onFinish={onFinish} disabled={loading}>
         <Form.Item hasFeedback label="Email" name="email" rules={[{ required: true }]}>
           <Input prefix={<MailOutlined />} />
@@ -62,7 +57,7 @@ const SignupPage: FC<SignupPageProps> = () => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Sign up
+            登録
           </Button>
         </Form.Item>
 

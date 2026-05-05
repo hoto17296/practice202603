@@ -20,13 +20,13 @@ const DefaultLayout: FC<DefaultLayoutProps> = () => {
           Practice 2026.03
         </Link>
         <nav className={style.nav}>
-          {location.pathname === "/signup" && <Link to="/signin">Sign in</Link>}
-          {location.pathname === "/signin" && <Link to="/signup">Sign up</Link>}
+          {location.pathname === "/signup" && <Link to="/signin">サインイン</Link>}
+          {location.pathname === "/signin" && <Link to="/signup">アカウント登録</Link>}
           {session && (
             <>
               <span style={{ color: "var(--color-note)" }}>ログイン中: {session.user.name}</span>
               <a href="#" onClick={signout}>
-                Sign out
+                サインアウト
               </a>
             </>
           )}
