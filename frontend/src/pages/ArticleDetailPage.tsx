@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router";
 
 import api, { type ApiSchemaTypes } from "../lib/api";
 import { useSession } from "../lib/auth";
+import { formatUnixTimestamp } from "../lib/utils";
 
 interface ArticleDetailPageProps {}
 
@@ -77,7 +78,7 @@ const ArticleDetailPage: FC<ArticleDetailPageProps> = () => {
       </div>
       <p style={{ color: "var(--color-note)", fontSize: "0.85em", marginTop: 0 }}>
         {article.author_name} ·{" "}
-        {article.published_at ? new Date(article.published_at).toLocaleString("ja-JP") : ""}
+        {article.published_at ? formatUnixTimestamp(article.published_at) : ""}
       </p>
       <div style={{ whiteSpace: "pre-wrap" }}>{article.body}</div>
     </Card>

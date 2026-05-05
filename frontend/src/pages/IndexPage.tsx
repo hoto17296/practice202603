@@ -4,6 +4,7 @@ import { useEffect, useState, type FC } from "react";
 import { useNavigate } from "react-router";
 
 import api, { type ApiSchemaTypes } from "../lib/api";
+import { formatUnixTimestamp } from "../lib/utils";
 
 interface IndexPageProps {}
 
@@ -41,7 +42,7 @@ const IndexPage: FC<IndexPageProps> = () => {
                 title={article.title}
                 description={
                   <span style={{ color: "var(--color-note)", fontSize: "0.85em" }}>
-                    {article.author_name} · {new Date(article.published_at).toLocaleString("ja-JP")}
+                    {article.author_name} · {formatUnixTimestamp(article.published_at)}
                   </span>
                 }
               />

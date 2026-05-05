@@ -9,7 +9,7 @@ from sqlmodel import col, select
 
 from database import get_database_session
 from lib.session import AuthSession, get_session
-from models import HTTPExceptionBody
+from models import HTTPExceptionBody, UnixTimestamp
 from tables import ArticleTable
 
 router = APIRouter()
@@ -22,7 +22,7 @@ class ArticleSummary(BaseModel):
     author_id: uuid.UUID
     author_name: str
     title: str
-    published_at: datetime
+    published_at: UnixTimestamp
 
 
 class ArticleDetail(BaseModel):
@@ -31,9 +31,9 @@ class ArticleDetail(BaseModel):
     author_name: str
     title: str
     body: str
-    published_at: datetime | None
-    created_at: datetime | None
-    updated_at: datetime | None
+    published_at: UnixTimestamp | None
+    created_at: UnixTimestamp | None
+    updated_at: UnixTimestamp | None
 
 
 class PostArticleRequestBody(BaseModel):

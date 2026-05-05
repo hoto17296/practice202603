@@ -2,7 +2,7 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Alert, Button, Form, Input } from "antd";
 import { useAtomValue } from "jotai";
 import { useState, type FC } from "react";
-import { Link, Navigate, useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 
 import { authSessionAtom } from "../atoms";
 import api from "../lib/api";
