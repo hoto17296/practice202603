@@ -4,3 +4,29 @@
   margin: 0 auto;
   padding: 1em;
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75em;
+  margin-bottom: 1.5em;
+  border-bottom: 1px solid #ddd;
+}
+
+.appName {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.appName:hover {
+  color: var(--color-primary-hover);
+}
+
+.nav {
+  display: flex;
+  gap: 1em;
+  font-size: 0.9em;
+}

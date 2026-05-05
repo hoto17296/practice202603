@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input } from "antd";
+import { Alert, Button, Form, Input, Space } from "antd";
 import { useEffect, useState, type FC } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 
@@ -35,6 +35,10 @@ const ArticleEditPage: FC<ArticleEditPageProps> = () => {
         form.setFieldsValue({ title: data.title, body: data.body });
       });
   }, [id]);
+
+  function handleCancel() {
+    if (window.confirm("編集を破棄して記事に戻りますか？")) navigate(`/article/${id}`);
+  }
 
   async function onFinish({ title, body }: { title: string; body: string }) {
     if (!id) return;
@@ -81,9 +85,6 @@ const ArticleEditPage: FC<ArticleEditPageProps> = () => {
 
   return (
     <>
-      <p>
-        <Link to={`/article/${id}`}>← 記事に戻る</Link>
-      </p>
       <h2>記事を編集</h2>
       <Form form={form} layout="vertical" onFinish={onFinish} disabled={loading}>
         <Form.Item
@@ -103,9 +104,14 @@ const ArticleEditPage: FC<ArticleEditPageProps> = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            保存する
-          </Button>
+          <Space>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              保存する
+            </Button>
+            <Button onClick={handleCancel} disabled={loading}>
+              キャンセル
+            </Button>
+          </Space>
         </Form.Item>
 
         {errorMessage ? <Alert message={errorMessage} type="error" showIcon /> : null}

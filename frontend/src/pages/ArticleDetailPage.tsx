@@ -1,3 +1,5 @@
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, Card, Tooltip } from "antd";
 import { useEffect, useState, type FC } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 
@@ -52,26 +54,33 @@ const ArticleDetailPage: FC<ArticleDetailPageProps> = () => {
   }
 
   return (
-    <>
-      <p>
-        <Link to="/">← 一覧に戻る</Link>
+    <Card>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "0.5em",
+        }}
+      >
+        <h2 style={{ margin: 0 }}>{article.title}</h2>
         {article.author_id === session.user.id && (
-          <>
-            {" "}
-            · <Link to={`/article/${id}/edit`}>編集</Link> ·{" "}
-            <a href="#" onClick={handleDelete}>
-              削除
-            </a>
-          </>
+          <div style={{ display: "flex", gap: "0.5em" }}>
+            <Tooltip title="編集する">
+              <Button icon={<EditOutlined />} onClick={() => navigate(`/article/${id}/edit`)} />
+            </Tooltip>
+            <Tooltip title="削除する">
+              <Button danger icon={<DeleteOutlined />} onClick={handleDelete} />
+            </Tooltip>
+          </div>
         )}
-      </p>
-      <h2>{article.title}</h2>
-      <p style={{ color: "var(--color-note)", fontSize: "0.85em" }}>
+      </div>
+      <p style={{ color: "var(--color-note)", fontSize: "0.85em", marginTop: 0 }}>
         {article.author_name} ·{" "}
         {article.published_at ? new Date(article.published_at).toLocaleString("ja-JP") : ""}
       </p>
-      <div style={{ whiteSpace: "pre-wrap", marginTop: "1em" }}>{article.body}</div>
-    </>
+      <div style={{ whiteSpace: "pre-wrap" }}>{article.body}</div>
+    </Card>
   );
 };
 

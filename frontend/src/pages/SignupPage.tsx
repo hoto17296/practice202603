@@ -1,16 +1,21 @@
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { Alert, Button, Form, Input } from "antd";
+import { useAtomValue } from "jotai";
 import { useState, type FC } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 
+import { authSessionAtom } from "../atoms";
 import api from "../lib/api";
 
 interface SignupPageProps {}
 
 const SignupPage: FC<SignupPageProps> = () => {
+  const session = useAtomValue(authSessionAtom);
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  if (session) return <Navigate to="/" replace />;
 
   async function onFinish({ email, password, name }: any) {
     setErrorMessage(null);
@@ -63,9 +68,6 @@ const SignupPage: FC<SignupPageProps> = () => {
 
         {errorMessage ? <Alert message={errorMessage} type="error" showIcon /> : null}
       </Form>
-      <p>
-        <Link to="/signin">Sign in</Link>
-      </p>
     </>
   );
 };
