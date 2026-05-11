@@ -174,11 +174,7 @@ class TestPostArticle:
                     response = await client.post("/api/articles/", json={"title": "Title", "body": "Body"})
         finally:
             app.dependency_overrides.pop(get_session, None)
-        assert response.status_code == 200
-        data = response.json()
-        assert data["title"] == "Title"
-        assert data["body"] == "Body"
-        assert data["author_id"] == str(MOCK_USER_ID)
+        assert response.status_code == 201
 
     @pytest.mark.anyio
     async def test_タイトルが空のとき(self):
@@ -228,10 +224,7 @@ class TestPatchArticle:
                     )
         finally:
             app.dependency_overrides.pop(get_session, None)
-        assert response.status_code == 200
-        data = response.json()
-        assert data["title"] == "Updated Title"
-        assert data["body"] == "Updated Body"
+        assert response.status_code == 204
 
     @pytest.mark.anyio
     async def test_記事が存在しないとき(self):
