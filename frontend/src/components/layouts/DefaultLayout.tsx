@@ -17,7 +17,7 @@ const DefaultLayout: FC<DefaultLayoutProps> = () => {
     <div className={style.layout}>
       <header className={style.header}>
         <Link to="/" className={style.appName}>
-          Practice 2026.03
+          WeBlog
         </Link>
         <nav className={style.nav}>
           {location.pathname === "/signup" && <Link to="/signin">サインイン</Link>}
