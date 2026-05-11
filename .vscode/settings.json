@@ -1,4 +1,8 @@
 {
+  "remote.autoForwardPorts": false,
+  "remote.extensionKind": {
+    "ms-ossdata.vscode-pgsql": ["workspace"]
+  },
   "[html][css][javascript][javascriptreact][typescript][typescriptreact][json][jsonc]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSave": true
@@ -10,6 +14,7 @@
   },
   "python.languageServer": "Pylance",
   "python.analysis.typeCheckingMode": "standard",
+  "python.terminal.activateEnvironment": false,
   "pgsql.serverGroups": [
     {
       "name": "Servers",
