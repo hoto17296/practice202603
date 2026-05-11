@@ -53,6 +53,15 @@
         "cwd": "${workspaceFolder}/database"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "Seed database",
+      "type": "shell",
+      "command": "python seed.py",
+      "options": {
+        "cwd": "${workspaceFolder}/database"
+      },
+      "problemMatcher": []
     }
   ],
   "inputs": [

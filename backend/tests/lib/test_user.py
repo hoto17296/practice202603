@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from lib.user import UserRegistrationError, _hash_password, register_user, verify_user
+from lib.user import UserRegistrationError, hash_password, register_user, verify_user
 from tables import UserTable
 
 
@@ -60,7 +60,7 @@ class TestRegisterUser:
 class TestVerifyUser:
     @pytest.mark.anyio
     async def test_メールアドレスとパスワードが正しいとき(self):
-        existing = UserTable(email="user@example.com", password_hash=_hash_password("ValidPass1!"), name="")
+        existing = UserTable(email="user@example.com", password_hash=hash_password("ValidPass1!"), name="")
         mock_db = _make_mock_db(existing_user=existing)
         with _patch_session(mock_db):
             result = await verify_user("user@example.com", "ValidPass1!")
@@ -75,7 +75,7 @@ class TestVerifyUser:
 
     @pytest.mark.anyio
     async def test_パスワードが誤っているとき(self):
-        existing = UserTable(email="user@example.com", password_hash=_hash_password("CorrectPass1!"), name="")
+        existing = UserTable(email="user@example.com", password_hash=hash_password("CorrectPass1!"), name="")
         mock_db = _make_mock_db(existing_user=existing)
         with _patch_session(mock_db):
             result = await verify_user("user@example.com", "WrongPass1!")

@@ -25,7 +25,7 @@ class UserRegistrationError(Exception):
         self.type = type
 
 
-def _hash_password(password: str) -> str:
+def hash_password(password: str) -> str:
     return pbkdf2_hmac(
         hash_name="sha256",
         password=password.encode(),
@@ -57,7 +57,7 @@ async def register_user(email: str, password: str, name: str) -> UserTable:
             raise UserRegistrationError("ALREADY_EXISTS")
 
         # create user
-        user = UserTable(email=email, password_hash=_hash_password(password), name=name)
+        user = UserTable(email=email, password_hash=hash_password(password), name=name)
         db.add(user)
         await db.commit()
         await db.refresh(user)
@@ -69,6 +69,6 @@ async def verify_user(email: str, password: str) -> UserTable | None:
     async with get_database_session() as db:
         stmt = select(UserTable).where(UserTable.email == email)
         user = (await db.exec(stmt)).first()
-    if user is None or _hash_password(password) != user.password_hash:
+    if user is None or hash_password(password) != user.password_hash:
         return None
     return user
