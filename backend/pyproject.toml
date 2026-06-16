@@ -17,7 +17,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "fastapi-cli>=0.0.24",
-    "ipython>=9.11.0",
+    "ipython>=9.14.1",
     "pytest>=9.0.2",
 ]
 
