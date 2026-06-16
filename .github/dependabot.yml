@@ -1,15 +1,12 @@
 version: 2
 
-multi-ecosystem-groups:
-  default:
-    schedule:
-      interval: weekly
-
 updates:
   - package-ecosystem: bun
     directory: /frontend/
-    multi-ecosystem-group: default
+    schedule:
+      interval: weekly
 
   - package-ecosystem: uv
     directory: /backend/
-    multi-ecosystem-group: default
+    schedule:
+      interval: weekly
